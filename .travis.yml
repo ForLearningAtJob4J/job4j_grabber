@@ -8,9 +8,9 @@ services:
 before_install:
   - psql -c 'create database jobOffers;' -U postgres
 
-cache:
-  directories:
-    - $HOME/.m2
+#cache:
+#  directories:
+#    - $HOME/.m2
 
 # используем режим обычного пользователя для сборки проекта.
 sudo: false
