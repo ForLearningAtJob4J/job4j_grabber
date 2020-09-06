@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +26,7 @@ public class SqlRuParse {
         put("ноя", 11);
         put("дек", 12);
     } };
+    private static final int NUM_PAGES = 5;
 
     private static void setProxy() {
         System.getProperties().put("http.proxyHost", "127.0.0.1");
@@ -47,12 +49,8 @@ public class SqlRuParse {
         return LocalDateTime.of(ld, LocalTime.parse(arr[1]));
     }
 
-    public static void main(String[] args) throws Exception {
-        if ("sapunovsa".equals(System.getProperty("user.name"))) {
-            setProxy();
-        }
-
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+    private static void parsePage(int pageNum) throws IOException {
+        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers/" + pageNum).get();
         Elements row = doc.select(".forumTable tr");
         for (int i = 1; i < row.size(); i++) {
             Element tr = row.get(i);
@@ -60,6 +58,16 @@ public class SqlRuParse {
                     tr.child(1).child(0).attr("href"),
                     tr.child(1).child(0).text(),
                     parseDate(tr.child(tr.children().size() - 1).text()));
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        if ("sapunovsa".equals(System.getProperty("user.name"))) {
+            setProxy();
+        }
+
+        for (int i = 0; i < NUM_PAGES; i++) {
+            parsePage(i);
         }
     }
 }
