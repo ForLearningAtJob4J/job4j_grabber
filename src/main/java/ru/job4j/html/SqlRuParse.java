@@ -5,10 +5,27 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-//import java.io.FileInputStream;
-//import java.util.Properties;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashMap;
 
 public class SqlRuParse {
+    private static final HashMap<String, Integer> MONTHS = new HashMap<>() { {
+        put("янв", 1);
+        put("фев", 2);
+        put("мар", 3);
+        put("апр", 4);
+        put("май", 5);
+        put("июн", 6);
+        put("июл", 7);
+        put("авг", 8);
+        put("сен", 9);
+        put("окт", 10);
+        put("ноя", 11);
+        put("дек", 12);
+    } };
+
     private static void setProxy() {
         System.getProperties().put("http.proxyHost", "127.0.0.1");
         System.getProperties().put("http.proxyPort", "3128");
@@ -16,16 +33,21 @@ public class SqlRuParse {
         System.getProperties().put("https.proxyPort", "3128");
     }
 
+    private static LocalDateTime parseDate(String s) {
+        String[] arr = s.split(", ");
+        LocalDate ld;
+        if ("сегодня".equals(arr[0])) {
+            ld = LocalDate.now();
+        } else if ("вчера".equals(arr[0])) {
+            ld = LocalDate.now().minusDays(1);
+        } else {
+            String[] splittedDate = arr[0].split(" ");
+            ld = LocalDate.of(2000 + Integer.parseInt(splittedDate[2]), MONTHS.get(splittedDate[1]), Integer.parseInt(splittedDate[0]));
+        }
+        return LocalDateTime.of(ld, LocalTime.parse(arr[1]));
+    }
+
     public static void main(String[] args) throws Exception {
-//        boolean useProxy = false;
-//        try (FileInputStream in = new FileInputStream("rabbit.properties")) {
-//            Properties config = new Properties();
-//            config.load(in);
-//            useProxy = Boolean.parseBoolean(config.getProperty("proxy.use"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        System.getProperties().forEach((o, o2) -> System.out.println(o + " " + o2));
         if ("sapunovsa".equals(System.getProperty("user.name"))) {
             setProxy();
         }
@@ -34,7 +56,10 @@ public class SqlRuParse {
         Elements row = doc.select(".forumTable tr");
         for (int i = 1; i < row.size(); i++) {
             Element tr = row.get(i);
-            System.out.format("%s%n%s [%s]%n", tr.child(1).child(0).attr("href"), tr.child(1).child(0).text(), tr.child(tr.children().size() - 1).text());
+            System.out.format("%s%n%s [%s]%n",
+                    tr.child(1).child(0).attr("href"),
+                    tr.child(1).child(0).text(),
+                    parseDate(tr.child(tr.children().size() - 1).text()));
         }
     }
 }
