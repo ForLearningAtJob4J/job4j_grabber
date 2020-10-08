@@ -27,13 +27,7 @@ public class SqlRuParse {
         put("дек", 12);
     } };
     private static final int NUM_PAGES = 5;
-
-    private static void setProxy() {
-        System.getProperties().put("http.proxyHost", "127.0.0.1");
-        System.getProperties().put("http.proxyPort", "3128");
-        System.getProperties().put("https.proxyHost", "127.0.0.1");
-        System.getProperties().put("https.proxyPort", "3128");
-    }
+    private static final int BASE_YEAR = 2000;
 
     private static LocalDateTime parseDate(String s) {
         String[] arr = s.split(", ");
@@ -44,7 +38,8 @@ public class SqlRuParse {
             ld = LocalDate.now().minusDays(1);
         } else {
             String[] splittedDate = arr[0].split(" ");
-            ld = LocalDate.of(2000 + Integer.parseInt(splittedDate[2]), MONTHS.get(splittedDate[1]), Integer.parseInt(splittedDate[0]));
+            ld = LocalDate.of(BASE_YEAR + Integer.parseInt(splittedDate[2]), MONTHS.get(splittedDate[1]),
+                    Integer.parseInt(splittedDate[0]));
         }
         return LocalDateTime.of(ld, LocalTime.parse(arr[1]));
     }
@@ -62,10 +57,6 @@ public class SqlRuParse {
     }
 
     public static void main(String[] args) throws Exception {
-        if ("sapunovsa".equals(System.getProperty("user.name"))) {
-            setProxy();
-        }
-
         for (int i = 0; i < NUM_PAGES; i++) {
             parsePage(i);
         }
