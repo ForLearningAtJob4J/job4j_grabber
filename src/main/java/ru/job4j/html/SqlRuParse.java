@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.model.Post;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class SqlRuParse {
     private static final int NUM_PAGES = 5;
     private static final int BASE_YEAR = 2000;
 
-    private static LocalDateTime parseDate(String s) {
+    private LocalDateTime parseDate(String s) {
         String[] arr = s.split(", ");
         LocalDate ld;
         if ("сегодня".equals(arr[0])) {
@@ -44,21 +45,51 @@ public class SqlRuParse {
         return LocalDateTime.of(ld, LocalTime.parse(arr[1]));
     }
 
-    private static void parsePage(int pageNum) throws IOException {
+    private void parsePage(int pageNum) throws IOException {
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers/" + pageNum).get();
-        Elements row = doc.select(".forumTable tr");
-        for (int i = 1; i < row.size(); i++) {
-            Element tr = row.get(i);
-            System.out.format("%s%n%s [%s]%n",
-                    tr.child(1).child(0).attr("href"),
-                    tr.child(1).child(0).text(),
-                    parseDate(tr.child(tr.children().size() - 1).text()));
+        Elements rows = doc.select(".forumTable tr");
+        for (int i = 1; i < rows.size(); i++) {
+            Element tr = rows.get(i);
+            Elements nodes = tr.child(1).children();
+            boolean isClosed = false;
+            if (nodes.size() > 1) {
+                for (int j = 1; j < nodes.size(); j++) {
+                    if (nodes.get(j).hasClass("closedTopic")) {
+                        isClosed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isClosed) {
+                continue;
+            }
+
+            System.out.println(detail(nodes.get(0).attr("href")));
         }
     }
 
+    private Post detail(String link) throws IOException {
+        return detail(link, false);
+    }
+
+    private Post detail(String link, boolean descInHtml) throws IOException {
+        Document doc = Jsoup.connect(link).get();
+        Element vacancyTable = doc.selectFirst(".msgTable");
+        Element msgHeader = vacancyTable.selectFirst(".messageHeader");
+        Elements msgBodies = vacancyTable.select(".msgBody");
+        String footer = vacancyTable.selectFirst(".msgFooter").ownText();
+
+        return new Post(msgHeader.ownText(),
+                descInHtml ? msgBodies.get(1).html() : msgBodies.get(1).ownText(),
+                msgBodies.get(0).child(0).attr("href"),
+                parseDate(footer.substring(0, footer.indexOf(" ["))));
+    }
+
     public static void main(String[] args) throws Exception {
+        SqlRuParse parser = new SqlRuParse();
         for (int i = 0; i < NUM_PAGES; i++) {
-            parsePage(i);
+            parser.parsePage(i);
         }
     }
 }
