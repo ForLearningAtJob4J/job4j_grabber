@@ -18,10 +18,10 @@ public class Post {
     @Override
     public String toString() {
         return "Post detail:{" + System.lineSeparator()
-                + "header='" + header + '\'' + System.lineSeparator()
-                + ", text='" + text + '\'' + System.lineSeparator()
-                + ", author='" + author + '\'' + System.lineSeparator()
-                + ", created=" + created + System.lineSeparator()
+                + "header='" + header + "'," + System.lineSeparator()
+                + "text='" + text +  "'," + System.lineSeparator()
+                + "author='" + author +  "'," + System.lineSeparator()
+                + "created=" + created + System.lineSeparator()
                 + '}' + System.lineSeparator();
     }
 }

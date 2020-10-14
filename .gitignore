@@ -4,7 +4,7 @@
 *.DS_Store
 *.swp
 *.out
-*.log
+*.log*
 
 # rails specific
 *.sqlite3
