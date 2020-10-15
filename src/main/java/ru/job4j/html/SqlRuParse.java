@@ -7,7 +7,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.job4j.grabber.Parse;
-import ru.job4j.model.Post;
+import ru.job4j.grabber.Post;
 
 import java.io.IOException;
 import java.time.LocalDate;
