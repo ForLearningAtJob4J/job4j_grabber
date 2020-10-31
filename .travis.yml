@@ -6,7 +6,7 @@ services:
   - postgresql
 
 before_install:
-  - psql -c 'create database jobs' -U postgres
+  - psql -c 'create database grabber' -U postgres
 
 #cache:
 #  directories:

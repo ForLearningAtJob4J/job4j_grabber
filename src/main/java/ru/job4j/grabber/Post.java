@@ -3,24 +3,28 @@ package ru.job4j.grabber;
 import java.time.LocalDateTime;
 
 public class Post {
-    private String header;
+    private int id;
+    private String name;
     private String text;
-    private String author;
+    private String link;
+    private String authorLink;
     private LocalDateTime created;
 
-    public Post(String header, String text, String author, LocalDateTime created) {
-        this.header = header;
+    public Post(String name, String text, String link, String authorLink, LocalDateTime created) {
+        this.name = name;
         this.text = text;
-        this.author = author;
+        this.link = link;
+        this.authorLink = authorLink;
         this.created = created;
     }
 
     @Override
     public String toString() {
         return "Post detail:{" + System.lineSeparator()
-                + "header='" + header + "'," + System.lineSeparator()
+                + "name='" + name + "'," + System.lineSeparator()
                 + "text='" + text +  "'," + System.lineSeparator()
-                + "author='" + author +  "'," + System.lineSeparator()
+                + "link='" + authorLink +  "'," + System.lineSeparator()
+                + "authorLink='" + authorLink +  "'," + System.lineSeparator()
                 + "created=" + created + System.lineSeparator()
                 + '}' + System.lineSeparator();
     }

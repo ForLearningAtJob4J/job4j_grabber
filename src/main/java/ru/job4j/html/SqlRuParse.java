@@ -100,6 +100,7 @@ public class SqlRuParse implements Parse {
 
             return new Post(msgHeader.ownText(),
                     descInHtml ? msgBodies.get(1).html() : msgBodies.get(1).ownText(),
+                    link,
                     msgBodies.get(0).child(0).attr("href"),
                     parseDate(footer.substring(0, footer.indexOf(" ["))));
         } catch (IOException e) {
