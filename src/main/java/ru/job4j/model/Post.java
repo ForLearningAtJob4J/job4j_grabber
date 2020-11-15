@@ -1,6 +1,7 @@
-package ru.job4j.grabber;
+package ru.job4j.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Post {
     private String id;
@@ -62,5 +63,22 @@ public class Post {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Post post = (Post) o;
+        return authorLink.equals(post.authorLink);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(authorLink);
     }
 }

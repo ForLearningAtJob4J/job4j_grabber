@@ -1,7 +1,8 @@
-package ru.job4j.grabber;
+package ru.job4j.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.model.Post;
 
 import java.io.InputStream;
 import java.sql.*;
@@ -58,6 +59,20 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     @Override
+    public void saveAll(List<Post> posts) {
+        try {
+            boolean prevAutoCommit = cnn.getAutoCommit();
+            cnn.setAutoCommit(false);
+            posts.forEach(this::save);
+            cnn.commit();
+            cnn.setAutoCommit(prevAutoCommit);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            LOG.error(throwable.getLocalizedMessage(), throwable);
+        }
+    }
+
+    @Override
     public List<Post> getAll() {
         try (PreparedStatement st = cnn.prepareStatement("SELECT id, name, text, link, authorLink, created \n"
                 + "FROM public.post;")) {
@@ -104,6 +119,22 @@ public class PsqlStore implements Store, AutoCloseable {
         if (cnn != null) {
             cnn.close();
         }
+    }
+
+    @SuppressWarnings("checkstyle:InnerAssignment")
+    public LocalDateTime getMaxDate() {
+        try (PreparedStatement st = cnn.prepareStatement("SELECT max(created) FROM public.post")) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                Timestamp ret = rs.getTimestamp(1);
+                if (ret != null) {
+                    return ret.toLocalDateTime();
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        return null;
     }
 
     private static Properties makeCfg() {
