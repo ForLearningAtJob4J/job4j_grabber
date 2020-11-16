@@ -68,9 +68,8 @@ public class Grabber implements Grab {
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
 
-            List<Post> posts = store.getAll();
             List<Post> newPosts = parse.list(store.getMaxDate());
-            if (newPosts.size() != 0 && (newPosts.removeAll(posts) || posts.size() == 0)) {
+            if (newPosts.size() > 0) {
                 store.saveAll(newPosts);
             }
         }
