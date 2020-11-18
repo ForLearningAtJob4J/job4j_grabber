@@ -121,13 +121,13 @@ public class PsqlStore implements Store, AutoCloseable {
         }
     }
 
-    @SuppressWarnings("checkstyle:InnerAssignment")
     public LocalDateTime getMaxDate() {
         try (PreparedStatement st = cnn.prepareStatement("SELECT max(created) FROM public.post")) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 Timestamp ret = rs.getTimestamp(1);
                 if (ret != null) {
+                    LOG.info(ret.toLocalDateTime().toString());
                     return ret.toLocalDateTime();
                 }
             }
